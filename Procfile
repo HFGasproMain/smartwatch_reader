@@ -1,0 +1,1 @@
+web: gunicorn smarthealth.wsgi --log-file -

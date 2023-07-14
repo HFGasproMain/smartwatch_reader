@@ -25,7 +25,7 @@ SECRET_KEY = "django-insecure-0mxpuxz+e$1=-@orpk*1bprx$u*bm2zurjb%afq8m*l)3v@a4a
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*', 'smarthealth.up.railway.app']
 
 
 # Application definition
@@ -108,6 +108,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Auth User
 AUTH_USER_MODEL = 'accounts.User'
 
+CSRF_TRUSTED_ORIGINS = ['https://smarthealth.up.railway.app']
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
