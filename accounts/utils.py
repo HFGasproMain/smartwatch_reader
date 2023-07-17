@@ -1,3 +1,5 @@
+from .models import User
+
 def is_doctor(user):
     return user.user_type == 'doctor'
 

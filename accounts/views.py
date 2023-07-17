@@ -7,7 +7,7 @@ from django.urls import reverse
 from django.core.paginator import Paginator
 from django.http import JsonResponse, HttpResponse
 from .utils import is_doctor, is_paramedic, is_vendor, assign_emergency_to_paramedic
-from .models import User, Notification, Emergency
+from .models import User, Notification, Emergency, Notifications
 import csv
 
 # Create your views here.
@@ -76,7 +76,7 @@ def login_view(request):
             if user.user_type == 'doctor':
                 return redirect('doctor_dashboard')
             elif user.user_type == 'paramedic':
-                return redirect('patient_dashboard')
+                return redirect('paramedic_dashboard')
             else:
                 return redirect('vendor_dashboard')
         else:
@@ -97,10 +97,10 @@ def doctor_dashboard_view(request):
     doctor = request.user
     patients = User.objects.filter(user_type='vendor').count()
     paramedics = User.objects.filter(user_type='paramedic').count()
-    notifications_count = Notification.objects.all().count()
+    notifications_count = Notifications.objects.all().count()
     emergencies = Emergency.objects.all()
     emergencies_count = Emergency.objects.all().count()
-    notifications = Notification.objects.all()
+    notifications = Notifications.objects.all()
 
     # Configure the number of items per page
     items_per_page = 5
@@ -120,6 +120,7 @@ def doctor_dashboard_view(request):
         'notifications':notifications,
         'notifications_count':notifications_count,
         'emergencies_count':emergencies_count,
+        'emergencies':emergencies,
         'page_obj':page_obj
     }
 
@@ -145,15 +146,71 @@ def vendor_dashboard_view(request):
 @user_passes_test(is_paramedic, login_url='login')
 def paramedic_dashboard_view(request):
     # Retrieve the authenticated doctor user
-    doctor = request.user
+    paramedic = request.user
+    patients = User.objects.filter(user_type='vendor').count()
+    paramedics_count = User.objects.filter(user_type='paramedic').count()
+    paramedics = User.objects.filter(user_type='paramedic').all()
+    emergencies_count = Emergency.objects.all().count()
+    pending_emergencies_count = Emergency.objects.filter(status='pending').count()
+    notifications_count = Notifications.objects.all().count()
+    emergencies = Emergency.objects.all()
+    assigned_emergencies = Emergency.objects.filter(paramedic=paramedic)
     #patient_diagnosis = PatientDiagnosis.objects.all()
     context = {
-        'doctor': doctor,
-        #,'patient_diagnosis':patient_diagnosis
-        #'patients': patients,
+        'emergencies_count':emergencies_count,
+        'notifications_count':notifications_count,
+        'patients':patients,
+        'paramedics':paramedics,
+        'paramedic':paramedic,
+        'paramedics_count':paramedics_count,
+        'emergencies':emergencies,
+        'assigned_emergencies':assigned_emergencies,
+        'pending_emergencies_count':pending_emergencies_count
     }
 
     return render(request, 'paramedic_dashboard.html', context)
+
+
+@login_required
+@user_passes_test(is_paramedic, login_url='login')
+def paramedic_details_view(request):
+    # Retrieve the emergency instance
+    #emergency = get_object_or_404(Emergency, id=emergency_id, paramedic=request.user)
+    emergencies = Emergency.objects.filter(paramedic=request.user, status='accepted')
+
+    patients = User.objects.filter(user_type='vendor').count()
+    paramedics_count = User.objects.filter(user_type='paramedic').count()
+    paramedics = User.objects.filter(user_type='paramedic').all()
+    emergencies_count = Emergency.objects.all().count()
+    notifications_count = Notifications.objects.all().count()
+    pending_emergencies_count = Emergency.objects.filter(status='pending').count()
+
+    
+    context = {
+        'emergencies': emergencies,
+        'emergencies_count':emergencies_count,
+        'notifications_count':notifications_count,
+        'patients':patients,
+        'paramedics':paramedics,
+        'pending_emergencies_count':pending_emergencies_count
+    }
+    return render(request, 'paramedic_details.html', context)
+
+
+
+def send_notification(start_time, end_time, max_heart_rate, min_heart_rate, calories, user_identifier):
+    # Save the notification data
+    notification = Notifications.objects.create(
+        start_time=start_time,
+        end_time=end_time,
+        max_heart_rate=max_heart_rate,
+        min_heart_rate=min_heart_rate,
+        calories=calories,
+        user=user_identifier
+    )
+
+    return notification
+
 
 
 @login_required
@@ -161,39 +218,46 @@ def paramedic_dashboard_view(request):
 def process_csv_data_view(request):
     # Delete existing data from the Notification model
     Notification.objects.all().delete()
-    with open('/Users/damilare/Documents/Devs/posi/Takeout/Fit/Daily activity metrics/2023-07-06.csv', 'r') as csvfile:
+    
+    with open('/Users/damilare/Documents/Devs/posi/smarthealth/healthdata.csv', 'r') as csvfile:
+    #with open('/Users/damilare/Documents/Devs/posi/Takeout/Fit/Daily activity metrics/2023-07-06.csv', 'r') as csvfile:
         csvreader = csv.reader(csvfile)
         next(csvreader)  # Skip the header row
 
-        for row in csvreader:
+        for index in csvreader:
 
-            print(f'rows => {row}')
-            start_time = row[0]
-            print(f'start_time => {start_time}')
-            end_time = row[1]
-            move_minutes = float(row[2]) if row[2] else 0.0
-            calories = float(row[3]) if row[3] else 0.0
-            distance = float(row[4]) if row[4] else 0.0
-            heart_points = float(row[5]) if row[5] else 0.0
-            heart_minutes = float(row[6]) if row[6] else 0.0
-            avg_heart_rate = float(row[7]) if row[7] else 0.0
-            max_heart_rate = float(row[8]) if row[8] else 0.0
-            min_heart_rate = float(row[9]) if row[9] else 0.0
-            avg_speed = float(row[10]) if row[10] else 0.0
-            max_speed = float(row[11]) if row[11] else 0.0
-            min_speed = float(row[12]) if row[12] else 0.0
-            step_count = int(row[13]) if row[13] else 0.0
+            #print(f'all rows index ==> {index}')
+            start_time = index[0]
+            print(f'row start_time => {start_time}')
+            end_time = index[1]
+            move_minutes = float(index[2]) if index[2] else 0.0
+            calories = float(index[3]) if index[3] else 0.0
+            distance = float(index[4]) if index[4] else 0.0
+            heart_points = float(index[5]) if index[5] else 0.0
+            heart_minutes = float(index[6]) if index[6] else 0.0
+            avg_heart_rate = float(index[7]) if index[7] else 0.0
+            max_heart_rate = float(index[8]) if index[8] else 0.0
+            min_heart_rate = float(index[9]) if index[9] else 0.0
+            avg_speed = float(index[10]) if index[10] else 0.0
+            max_speed = float(index[11]) if index[11] else 0.0
+            min_speed = float(index[12]) if index[12] else 0.0
+            step_count = int(index[13]) if index[13] else 0.0
             
-            print(f'max_heart_rate => {max_heart_rate}')
-            print(f'min_heart_rate => {max_heart_rate}')
-            print(f'calories => {calories}')
+            #print(f'max_heart_rate for index {index} => {max_heart_rate}')
+            #print(f'min_heart_rate for index {index} => {max_heart_rate}')
+            #print(f'calories for index {index} => {calories}')
             patient = User.objects.filter(user_type='vendor').first()
             user_identifier = patient
             user_location = patient.location
-            print(f'id and loc => {user_identifier} & {user_location}')
+            #print(f'id and loc => {user_identifier} & {user_location}')
+
+            if max_heart_rate == 95:
+                print('Found!!!')
+                print(f'{avg_heart_rate}, {min_heart_rate}, {max_heart_rate}')
+                #break
 
             # Set conditions to trigger notifications based on the data
-            if max_heart_rate >= 100 or min_heart_rate < 40 or calories < 0.5:
+            if max_heart_rate >= 100 or min_heart_rate < 50 or calories < 0.5:
                 # Trigger notification logic here
                 send_notification(start_time, end_time, max_heart_rate, min_heart_rate, calories, user_identifier)
 
@@ -213,47 +277,34 @@ def process_csv_data_view(request):
             
 
 def get_emergency_view(request):
-	notifications = Notification.objects.all()
+	notifications = Notifications.objects.all()
 	for notification in notifications:
 		if notification.max_heart_rate > 100:
-			emergency = Emergency.objects.create(notification=notification)
+			emergency = Emergency.objects.create(notification=notification, 
+                issue=f"Patient's heart rate of {notification.max_heart_rate} is high!!!")
 		if notification.min_heart_rate < 40:
-			emergency = Emergency.objects.create(notification=notification)
-		if notification.calories < 0.5:
-			emergency = Emergency.objects.create(notification=notification)
+			emergency = Emergency.objects.create(notification=notification,
+                issue=f"Patient's heart rate of {notification.min_heart_rate} is very low!!!")
+		if notification.calories > 0.0 and notification.calories < 0.5:
+			emergency = Emergency.objects.create(notification=notification,
+                issue=f"Patient's body calories of {notification.calories} is very low!!!")
 	return HttpResponseRedirect(reverse('doctor_dashboard')) 
            
    
 
-def send_notification(start_time, end_time, max_heart_rate, min_heart_rate, calories, user_identifier):
-    # Save the notification data
-    notification = Notification.objects.create(
-        start_time=start_time,
-        end_time=end_time,
-        max_heart_rate=max_heart_rate,
-        min_heart_rate=min_heart_rate,
-        calories=calories,
-        user=user_identifier
-    )
-
-    # Optional: Perform any additional logic or actions related to the notification
-    # e.g., notifying the doctor, updating the patient's status, etc.
-
-    # Return the notification object to be used by the doctor for further actions
-    return notification
 
 
 def assign_notification_view(request, notification_id):
     # Retrieve the notification based on the ID
-    notification = Notification.objects.get(id=notification_id)
+    emergency = Emergency.objects.get(id=notification_id)
 
     # Find an available paramedic in the same location
     paramedic = User.objects.filter(user_type='paramedic', location=notification.user.location, availability=True).first()
 
     if paramedic:
-        # Assign the notification to the paramedic
-        notification.paramedic_assigned = paramedic
-        notification.save()
+        # Assign the emergency to the paramedic
+        emergency.paramedic_assigned = paramedic
+        emergency.save()
 
         # Update the paramedic's availability
         paramedic.availability = False
@@ -264,12 +315,169 @@ def assign_notification_view(request, notification_id):
         return JsonResponse({'success': False})
 
 
+@login_required
+@user_passes_test(is_doctor, login_url='login')
+def emergency_message_view(request, emergency_id):
+    emergency = get_object_or_404(Emergency, id=emergency_id)
+
+    if request.method == 'POST':
+        doc_message = request.POST['doc_message']
+        emergency.doc_message = doc_message
+        emergency.save()
+        return redirect('assign_emergency', emergency_id=emergency_id)
+    else:
+        pass
+
+    context = {
+        'emergency': emergency,
+    }
+    return render(request, 'emergency_message.html', context)
+
+
+@login_required
+@user_passes_test(is_doctor, login_url='login')
 def assign_emergency_to_paramedic_view(request, emergency_id):
     # Retrieve the emergency instance
     emergency = Emergency.objects.get(id=emergency_id)
+    # Get all available paramedics
+    available_paramedics = User.objects.filter(user_type='paramedic', availability=True)
+    print(f'para {available_paramedics}')
 
-    # Assign the emergency to a paramedic
-    assign_emergency_to_paramedic(emergency)
 
-    # Redirect to the desired page (e.g., emergency list or detail view)
-    return redirect('emergency_list')
+    if request.method == 'POST':
+        paramedic_id = request.POST['paramedic']
+        paramedic = get_object_or_404(User, id=paramedic_id)
+        emergency.paramedic = paramedic
+        emergency.save()
+
+        # Update the availability of the assigned paramedic
+        paramedic.availability = False
+        paramedic.save()
+        return redirect('doctor_dashboard')
+
+    context = {
+        'emergency': emergency,
+        'paramedics': available_paramedics,
+    }
+    return render(request, 'assign_emergency.html', context)
+   
+
+@login_required
+@user_passes_test(is_doctor, login_url='login')
+def paramedics_list_view(request):
+    doctor = request.user
+    # Get all paramedics
+    paramedics = User.objects.filter(user_type='paramedic')
+    emergencies_count = Emergency.objects.all().count()
+    patients = User.objects.filter(user_type='vendor').count()
+    # Filter the emergencies assigned to the paramedic
+    pending_emergencies = Emergency.objects.filter(status='pending').count()
+    context = {
+        'paramedics': paramedics,
+        #'emergencies': emergencies,
+        'doctor':doctor,
+        'patients':patients,
+        'emergencies_count':emergencies_count,
+        'pending_emergencies':pending_emergencies
+    }
+    return render(request, 'paramedics_list.html', context)
+
+
+@login_required
+@user_passes_test(is_paramedic, login_url='login')
+def patient_list_view(request):
+    emergencies_count = Emergency.objects.all().count()
+    patients_count = User.objects.filter(user_type='vendor').count()
+    patients = User.objects.filter(user_type='vendor')
+    pending_emergencies = Emergency.objects.filter(status='pending').count()
+
+    context = {
+        'patients': patients,
+        'patients_count':patients_count,
+        'emergencies_count':emergencies_count,
+        'pending_emergencies':pending_emergencies
+
+    }
+    return render(request, 'patients_list.html', context)
+
+
+
+@login_required
+@user_passes_test(is_doctor, login_url='login')
+def emergency_list_view(request):
+    # Get the current logged-in paramedic
+    #paramedic = request.user
+    doctor = request.user
+    emergencies_count = Emergency.objects.all().count()
+    patients = User.objects.filter(user_type='vendor').count()
+    # Filter the emergencies assigned to the paramedic
+    pending_emergencies = Emergency.objects.filter(status='pending').count()
+    emergencies = Emergency.objects.all()
+    context = {
+        'emergencies': emergencies,
+        'doctor':doctor,
+        'emergencies_count':emergencies_count,
+        'pending_emergencies':pending_emergencies,
+        'patients':patients
+    }
+    return render(request, 'emergency_list.html', context)
+
+
+@login_required
+@user_passes_test(is_paramedic, login_url='login')
+def accept_or_reject_emergency_view(request, emergency_id):
+    # Retrieve the emergency instance
+    emergency = Emergency.objects.get(id=emergency_id)
+
+    if request.method == 'POST':
+        status = request.POST.get('status')
+
+        if status == 'accept':
+            # Update the emergency status to 'accepted'
+            emergency.status = 'accepted'
+            emergency.save()
+        elif status == 'reject':
+            # Update the emergency status to 'rejected'
+            emergency.status = 'pending'
+            emergency.save()
+
+        # Redirect to the emergency detail view
+        return redirect('emergency_detail', emergency_id=emergency_id)
+
+    # Render the accept/reject form template
+    return render(request, 'accept_reject_emergency.html', {'emergency': emergency})
+
+
+@login_required
+@user_passes_test(is_paramedic, login_url='login')
+def accept_emergency_view(request, emergency_id):
+    emergency = get_object_or_404(Emergency, id=emergency_id)
+    emergency.status = 'accepted'
+    emergency.save()
+    # Redirect to the emergency detail view or any other desired page
+    return redirect('paramedic_dashboard')
+
+
+@login_required
+@user_passes_test(is_paramedic, login_url='login')
+def reject_emergency_view(request, emergency_id):
+    emergency = get_object_or_404(Emergency, id=emergency_id)
+    emergency.status = 'pending'
+    emergency.save()
+    # Redirect to the paramedic dashboard or any other desired page
+    return redirect('paramedic_dashboard')
+
+
+
+def emergency_detail_view(request, emergency_id):
+    emergency = get_object_or_404(Emergency, id=emergency_id)
+    notifications_count = Notifications.objects.all().count()
+    emergencies_count = Emergency.objects.all().count()
+    patients = User.objects.filter(user_type='vendor').count()
+    context = {
+        'emergencies_count':emergencies_count,
+        'notifications_count':notifications_count,
+        'emergency': emergency,
+        'patients':patients
+    }
+    return render(request, 'emergency_detail.html', context)

@@ -1,5 +1,4 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -11,7 +10,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Smart Health App - Dashboard</title>
+    <title>Smart Health App - Paramedic Dashboard</title>
 
     <!-- Custom fonts for this template-->
     <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet" type="text/css">
@@ -99,9 +98,6 @@
                     <i class="fas fa-fw fa-chart-area"></i>
                     <span>View emergencies</span></a>
             </li>
- 
-        
-
             <!-- Divider -->
             <hr class="sidebar-divider d-none d-md-block">
 
@@ -123,6 +119,7 @@
 
             <!-- Main Content -->
             <div id="content">
+
                 <!-- Topbar -->
                 <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
 
@@ -171,13 +168,14 @@
                                 </form>
                             </div>
                         </li>
+
                         <!-- Nav Item - Alerts -->
                         <li class="nav-item dropdown no-arrow mx-1">
                             <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="fas fa-bell fa-fw"></i>
                                 <!-- Counter - Alerts -->
-                                <span class="badge badge-danger badge-counter">{{ emergencies_count }}</span>
+                                <span class="badge badge-danger badge-counter">{{notifications_count}}+</span>
                             </a>
                             <!-- Dropdown - Alerts -->
                             <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
@@ -185,7 +183,7 @@
                                 <h6 class="dropdown-header">
                                     Alerts Center
                                 </h6>
-                                <a class="dropdown-item d-flex align-items-center" href="#">
+                                <!-- <a class="dropdown-item d-flex align-items-center" href="#">
                                     <div class="mr-3">
                                         <div class="icon-circle bg-primary">
                                             <i class="fas fa-file-alt text-white"></i>
@@ -218,17 +216,17 @@
                                         Spending Alert: We've noticed unusually high spending for your account.
                                     </div>
                                 </a>
-                                <a class="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a>
+                                <a class="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a> -->
                             </div>
                         </li>
 
                         <!-- Nav Item - Messages -->
                         <li class="nav-item dropdown no-arrow mx-1">
-                            <a class="nav-link dropdown-toggle" title="total notifications" href="#" id="messagesDropdown" role="button"
+                            <a class="nav-link dropdown-toggle" href="#" id="messagesDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="fas fa-envelope fa-fw"></i>
                                 <!-- Counter - Messages -->
-                                <span class="badge badge-danger badge-counter">{{ notifications_count }}</span>
+                                <span class="badge badge-danger badge-counter">{{ emergencies_count }}+</span>
                             </a>
                             <!-- Dropdown - Messages -->
                             <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
@@ -236,7 +234,55 @@
                                 <h6 class="dropdown-header">
                                     Message Center
                                 </h6>
-
+                                <!-- <a class="dropdown-item d-flex align-items-center" href="#">
+                                    <div class="dropdown-list-image mr-3">
+                                        <img class="rounded-circle" src="img/undraw_profile_1.svg"
+                                            alt="...">
+                                        <div class="status-indicator bg-success"></div>
+                                    </div>
+                                    <div class="font-weight-bold">
+                                        <div class="text-truncate">Hi there! I am wondering if you can help me with a
+                                            problem I've been having.</div>
+                                        <div class="small text-gray-500">Emily Fowler · 58m</div>
+                                    </div>
+                                </a>
+                                <a class="dropdown-item d-flex align-items-center" href="#">
+                                    <div class="dropdown-list-image mr-3">
+                                        <img class="rounded-circle" src="img/undraw_profile_2.svg"
+                                            alt="...">
+                                        <div class="status-indicator"></div>
+                                    </div>
+                                    <div>
+                                        <div class="text-truncate">I have the photos that you ordered last month, how
+                                            would you like them sent to you?</div>
+                                        <div class="small text-gray-500">Jae Chun · 1d</div>
+                                    </div>
+                                </a>
+                                <a class="dropdown-item d-flex align-items-center" href="#">
+                                    <div class="dropdown-list-image mr-3">
+                                        <img class="rounded-circle" src="img/undraw_profile_3.svg"
+                                            alt="...">
+                                        <div class="status-indicator bg-warning"></div>
+                                    </div>
+                                    <div>
+                                        <div class="text-truncate">Last month's report looks great, I am very happy with
+                                            the progress so far, keep up the good work!</div>
+                                        <div class="small text-gray-500">Morgan Alvarez · 2d</div>
+                                    </div>
+                                </a>
+                                <a class="dropdown-item d-flex align-items-center" href="#">
+                                    <div class="dropdown-list-image mr-3">
+                                        <img class="rounded-circle" src="https://source.unsplash.com/Mv9hjnEUHR4/60x60"
+                                            alt="...">
+                                        <div class="status-indicator bg-success"></div>
+                                    </div>
+                                    <div>
+                                        <div class="text-truncate">Am I a good boy? The reason I ask is because someone
+                                            told me that people say this to all dogs, even if they aren't good...</div>
+                                        <div class="small text-gray-500">Chicken the Dog · 2w</div>
+                                    </div>
+                                </a>
+                                <a class="dropdown-item text-center small text-gray-500" href="#">Read More Messages</a> -->
                             </div>
                         </li>
 
@@ -246,7 +292,7 @@
                         <li class="nav-item dropdown no-arrow">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">{{ user }}</span>
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">Hello {{user}}</span>
                                 <img class="img-profile rounded-circle"
                                     src="img/undraw_profile.svg">
                             </a>
@@ -282,9 +328,9 @@
 
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                        <h1 class="h3 mb-0 text-gray-800">Doctor Dashboard</h1>
-                        <!-- <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
-                                class="fas fa-download fa-sm text-white-50"></i> Generate Report</a> -->
+                        <h1 class="h3 mb-0 text-gray-800">Paramedic Dashboard</h1>
+                        <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
+                                class="fas fa-download fa-sm text-white-50"></i> Generate Report</a>
                     </div>
 
                     <!-- Content Row -->
@@ -298,7 +344,7 @@
                                         <div class="col mr-2">
                                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                                 total paramedics</div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800">{% if paramedics %}{{ paramedics }}{% else %} 0 {% endif %}</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">3</div>
                                         </div>
                                         <div class="col-auto">
                                             <i class="fas fa-calendar fa-2x text-gray-300"></i>
@@ -332,16 +378,16 @@
                                 <div class="card-body">
                                     <div class="row no-gutters align-items-center">
                                         <div class="col mr-2">
-                                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">total data
+                                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">total emergencies
                                             </div>
                                             <div class="row no-gutters align-items-center">
                                                 <div class="col-auto">
-                                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{% if notifications_count %}{{ notifications_count }}{% else %} 0 {% endif %}</div>
+                                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{ notifications_count }}</div>
                                                 </div>
                                                 <div class="col">
                                                     <div class="progress progress-sm mr-2">
                                                         <div class="progress-bar bg-info" role="progressbar"
-                                                            style="width: 30%" aria-valuenow="{{ notifications }}" aria-valuemin="0"
+                                                            style="width: 65%" aria-valuenow="50" aria-valuemin="0"
                                                             aria-valuemax="100"></div>
                                                     </div>
                                                 </div>
@@ -362,8 +408,8 @@
                                     <div class="row no-gutters align-items-center">
                                         <div class="col mr-2">
                                             <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                                total emergency</div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800">{% if emergencies_count %}{{ emergencies_count }} {% else %} 0 {% endif %}</div>
+                                                Pending emergencies</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ emergencies_count }}</div>
                                         </div>
                                         <div class="col-auto">
                                             <i class="fas fa-comments fa-2x text-gray-300"></i>
@@ -379,76 +425,45 @@
                     <div class="row">
 
                         <!-- Area Chart -->
-                        <div class="col-xl-7 col-lg-7">
+                        <div class="col-xl-8 col-lg-7">
                             <div class="card shadow mb-4">
                                 <!-- Card Header - Dropdown -->
-                                <div
-                                    class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                                    <h6 class="m-0 font-weight-bold text-primary">Patient's Data Overview</h6>
+                                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                    <h6 class="m-0 font-weight-bold text-primary">Patient Emergency Data</h6>
                                     <div class="dropdown no-arrow">
                                         <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
                                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
                                         </a>
-                                        
+                                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                                            aria-labelledby="dropdownMenuLink">
+                                            <div class="dropdown-header">Dropdown Header:</div>
+                                            <a class="dropdown-item" href="#">Action</a>
+                                            <a class="dropdown-item" href="#">Another action</a>
+                                            <div class="dropdown-divider"></div>
+                                            <a class="dropdown-item" href="#">Something else here</a>
+                                        </div>
                                     </div>
                                 </div>
                                 <!-- Card Body -->
                                 <div class="card-body">
-                                    <div>
-                                        <!-- Assuming you have a table displaying the emergencies -->
-                                        <table class="table table-bordered">
-                                            <!-- Table headers -->
-                                            <thead>
-                                                <tr>
-                                                    <th>Emergency ID</th>
-                                                    <th>User</th>
-                                                     <th>Condition</th>
-                                                    <th>Date Created</th>
-                                                    <!-- Other columns -->
-                                                    <th>Action</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <!-- Loop through the emergencies -->
-                                                {% for emergency in emergencies %}
-
-                                                <tr>
-                                                    <td>EMR/SH-{{ emergency.id }}</td>
-                                                    <td>{{ emergency.notification.user.username }}</td>
-                                                    <td>{{ emergency.issue }}</td>
-                                                    <td>{{ emergency.notification.date_created }}</td>
-                                                    <!-- Other columns -->
-                                                    <td>
-                                                        {% if emergency.paramedic %}
-                                                            <span style="color:red"><b>Assigned to medic {{ emergency.paramedic.username }}</b></span>
-                                                        {% else %}
-                                                            <a class="btn btn-success" href="{% url 'emergency_message' emergency.id %}">Recommend</a>
-                                                        {% endif %}
-                                                    </td>
-                                                </tr>
-                                                {% endfor %}
-                                            </tbody>
-                                        </table>
-
-
-                                    </div>
-
-                                    <!-- Display pagination links -->
-                                    <div class="pagination">
-                                      <span class="step-links">
-                                        {% if page_obj.has_previous %}
-                                          <a href="?page=1">&laquo; first</a>
-                                          <a href="?page={{ page_obj.previous_page_number }}">previous</a>
-                                        {% endif %}
-
-                                        <span class="current-page">{{ page_obj.number }}</span>
-
-                                        {% if page_obj.has_next %}
-                                          <a href="?page={{ page_obj.next_page_number }}">next</a>
-                                          <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
-                                        {% endif %}
-                                      </span>
+                                    <div class="card-body">
+                                        <h2>Emergency Details</h2>
+                                        <p>Emergency ID: EMR/SH-{{ emergency.id }}</p>
+                                        <p>Patient: {{ emergency.notification.user.username }}</p>
+                                        <p style="color:red">Condition: {{ emergency.issue }}</p>
+                                        <p>Patient Location: {{ emergency.notification.user.location }}</p>
+                                        <p>Emergency status: {{ emergency.status }}</p>
+                                        <p>Date Created: {{ emergency.notification.date_created }}</p>
+                                         <hr>
+                                        <p>Doctor Message: {{ emergency.doc_message }}</p>
+                                        
+                                        <form method="POST" action="{% url 'emergency_message' emergency.id %}">
+                                          {% csrf_token %}
+                                          <textarea name="doc_message" class="form-control" rows="4" required></textarea>
+                                          <br>
+                                          <button type="submit" class="btn btn-primary">Submit recommendation</button>
+                                        </form>
                                     </div>
 
                                 </div>
@@ -456,50 +471,31 @@
                         </div>
 
                         <!-- Pie Chart -->
-                        <div class="col-xl-5 col-lg-5">
+                        <div class="col-xl-4 col-lg-5">
                             <div class="card shadow mb-4">
                                 <!-- Card Header - Dropdown -->
                                 <div
                                     class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                                    <h6 class="m-0 font-weight-bold text-primary">Hospital Data</h6>
+                                    <h6 class="m-0 font-weight-bold text-primary">Variables</h6>
                                     <div class="dropdown no-arrow">
-                                        
+                                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                                        </a>
+                                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                                            aria-labelledby="dropdownMenuLink">
+                                            <div class="dropdown-header">Dropdown Header:</div>
+                                            <a class="dropdown-item" href="#">Action</a>
+                                            <a class="dropdown-item" href="#">Another action</a>
+                                            <div class="dropdown-divider"></div>
+                                            <a class="dropdown-item" href="#">Something else here</a>
+                                        </div>
                                     </div>
                                 </div>
                                 <!-- Card Body -->
                                 <div class="card-body">
-                                    <table class="table table-bordered">
-                                        <thead>
-                                            <tr>
-                                                <th>Hospital Name</th>
-                                                <th>Facility ID</th>
-                                                <th>Available</th>
-                                                <th>Location</th>
-                                                <!-- <th>State</th> -->
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td>{{ doctor.hospital_name }}</td>
-                                                <td>{{ doctor.facility_uid }}</td>
-                                                <td>{{ doctor.availability }}</td>
-                                                <td>{{ doctor.location }}</td>
-                                                <!-- <td>{{ doctor.state }}</td> -->
-                                            </tr>
-                                              </tbody>
-                                    </table>
-                                    <hr>
-                                    <div class="mt-4 text-center small">
-                                        <span class="mr-2">
-                                            <i class="fas fa-circle text-primary"></i> Direct
-                                        </span>
-                                        <span class="mr-2">
-                                            <i class="fas fa-circle text-success"></i> Social
-                                        </span>
-                                        <span class="mr-2">
-                                            <i class="fas fa-circle text-info"></i> Referral
-                                        </span>
-                                    </div>
+                                    
+                                    
                                 </div>
                             </div>
                         </div>
@@ -571,36 +567,6 @@
     <!-- Page level custom scripts -->
     <script src="{% static 'js/demo/chart-area-demo.js' %}"></script>
     <script src="{% static 'js/demo/chart-pie-demo.js' %}"></script>
-
-    <script>
-      // Add event listener to the assign buttons
-      document.querySelectorAll('.assign-button').forEach(function(button) {
-        button.addEventListener('click', function() {
-          var notificationId = this.getAttribute('data-notification-id');
-
-          // Make an asynchronous request to assign the paramedic
-          fetch('/assign-notification/' + notificationId + '/')
-            .then(response => response.json())
-            .then(data => {
-              // Handle the response and update the UI as needed
-              if (data.success) {
-                // Paramedic assigned successfully
-                // You can update the table or display a success message
-                console.log('Paramedic assigned successfully');
-              } else {
-                // Paramedic assignment failed
-                // You can display an error message or handle the failure scenario
-                console.log('Paramedic assignment failed');
-              }
-            })
-            .catch(error => {
-              // Handle any error that occurs during the request
-              console.log('Error assigning paramedic:', error);
-            });
-        });
-      });
-    </script>
-
 
 </body>
 
