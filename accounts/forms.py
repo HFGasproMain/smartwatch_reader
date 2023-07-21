@@ -22,7 +22,7 @@ class ParamedicRegistrationForm(UserCreationForm):
 
     class Meta:
         model = User
-        fields = ['username', 'password1', 'password2', 'first_name', 'last_name', 'smartwatch_serialno', 'phone_number', 'email_address',
+        fields = ['username', 'password1', 'password2', 'first_name', 'last_name', 'phone_number', 'email_address',
          'state', 'location']
 
 
@@ -34,7 +34,7 @@ class VendorRegistrationForm(UserCreationForm):
 
     class Meta:
         model = User
-        fields = ['username', 'password1', 'password2', 'first_name', 'last_name', 'phone_number', 'email_address', 'state', 'location']
+        fields = ['username', 'password1', 'password2', 'first_name', 'last_name', 'smartwatch_serialno', 'phone_number', 'email_address', 'state', 'location']
         
 
 
