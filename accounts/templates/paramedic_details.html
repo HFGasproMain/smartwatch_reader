@@ -29,7 +29,7 @@
     <div id="wrapper">
 
          <!-- Sidebar -->
-        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+      <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
             <!-- Sidebar - Brand -->
             <a class="sidebar-brand d-flex align-items-center justify-content-center" href="">
@@ -376,8 +376,8 @@
                                         </thead>
                                         <tbody>
                                             <tr>
-                                                <td>{{ paramedic.first_name }}, {{ paramedic.last_name }}</td>
-                                                <td>{{ paramedic.smartwatch_serialno }}</td>
+                                                <td>{{ user.first_name }}, {{ user.last_name }}</td>
+                                                <td>{{ user.smartwatch_serialno }}</td>
                                                 <td>
                                                     {% if paramedic.availability == 'True' %}
                                                         <span style="color:green;">True</span>
@@ -385,8 +385,8 @@
                                                         <span style="color:red;">False</span>
                                                     {% endif %}
                                                 </td>
-                                                <td>{{ paramedic.location }}</td>
-                                                <td>{{ paramedic.state }}</td>
+                                                <td>{{ user.location }}</td>
+                                                <td>{{ user.state }}</td>
                                             </tr>
                                               </tbody>
                                     </table>

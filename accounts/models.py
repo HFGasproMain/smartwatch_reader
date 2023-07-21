@@ -90,5 +90,8 @@ class Emergency(models.Model):
     def __str__(self):
         return f"Emergency for {self.notification} on {self.date_created}"
 
+    class Meta:
+        ordering=('-date_created',)
+
 
 

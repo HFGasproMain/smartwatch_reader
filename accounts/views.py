@@ -97,6 +97,7 @@ def doctor_dashboard_view(request):
     doctor = request.user
     patients = User.objects.filter(user_type='vendor').count()
     paramedics = User.objects.filter(user_type='paramedic').count()
+    print(f'total doc_dash para {paramedics}')
     notifications_count = Notifications.objects.all().count()
     emergencies = Emergency.objects.all()
     emergencies_count = Emergency.objects.all().count()
@@ -131,12 +132,21 @@ def doctor_dashboard_view(request):
 @user_passes_test(is_vendor, login_url='login')
 def vendor_dashboard_view(request):
     # Retrieve the authenticated doctor user
-    doctor = request.user
+    vendor = request.user
+    user_emergencies = Emergency.objects.filter(notification__user=vendor).first()
+    paramedics_count = User.objects.filter(user_type='paramedic').count()
+    patients = User.objects.filter(user_type='vendor').count()
+    emergencies_count = Emergency.objects.all().count()
+    pending_emergencies_count = Emergency.objects.filter(status='pending').count()
+    print(f'user emergency => {user_emergencies}')
     #patient_diagnosis = PatientDiagnosis.objects.all()
     context = {
-        'doctor': doctor,
-        #,'patient_diagnosis':patient_diagnosis
-        #'patients': patients,
+        'vendor': vendor,
+        'user_emergencies':user_emergencies,
+        'paramedics_count':paramedics_count,
+        'emergencies_count':emergencies_count,
+        'pending_emergencies_count':pending_emergencies_count,
+        'patients': patients
     }
 
     return render(request, 'vendor_dashboard.html', context)
@@ -247,6 +257,7 @@ def process_csv_data_view(request):
             #print(f'min_heart_rate for index {index} => {max_heart_rate}')
             #print(f'calories for index {index} => {calories}')
             patient = User.objects.filter(user_type='vendor').first()
+            print(f'vendor => {patient}')
             user_identifier = patient
             user_location = patient.location
             #print(f'id and loc => {user_identifier} & {user_location}')
@@ -262,19 +273,8 @@ def process_csv_data_view(request):
                 send_notification(start_time, end_time, max_heart_rate, min_heart_rate, calories, user_identifier)
 
     return HttpResponseRedirect(reverse('doctor_dashboard'))
-     # Set conditions to trigger notifications based on the data
-            # if max_heart_rate >= 100:
-            #     # Trigger notification logic here
-            #     # You can pass the relevant data to the notification function
-            #     send_notification(start_time, end_time, max_heart_rate, min_heart_rate, calories, user_identifier)
-
-            # if min_heart_rate < 40:
-            #     send_notification(start_time, end_time, max_heart_rate, calories, min_heart_rate, user_identifier)
-
-            # if calories < 0.5:
-            #     send_notification(start_time, end_time, max_heart_rate, min_heart_rate, calories, user_identifier)
-
             
+
 
 def get_emergency_view(request):
 	notifications = Notifications.objects.all()
@@ -290,8 +290,6 @@ def get_emergency_view(request):
                 issue=f"Patient's body calories of {notification.calories} is very low!!!")
 	return HttpResponseRedirect(reverse('doctor_dashboard')) 
            
-   
-
 
 
 def assign_notification_view(request, notification_id):
@@ -363,11 +361,13 @@ def assign_emergency_to_paramedic_view(request, emergency_id):
    
 
 @login_required
-@user_passes_test(is_doctor, login_url='login')
+@user_passes_test([is_doctor], login_url='login')
 def paramedics_list_view(request):
     doctor = request.user
     # Get all paramedics
     paramedics = User.objects.filter(user_type='paramedic')
+    paramedics_count = User.objects.filter(user_type='paramedic').count()
+    print(f'total para_list para {paramedics}')
     emergencies_count = Emergency.objects.all().count()
     patients = User.objects.filter(user_type='vendor').count()
     # Filter the emergencies assigned to the paramedic
@@ -375,6 +375,7 @@ def paramedics_list_view(request):
     context = {
         'paramedics': paramedics,
         #'emergencies': emergencies,
+        'paramedics_count':paramedics_count,
         'doctor':doctor,
         'patients':patients,
         'emergencies_count':emergencies_count,
@@ -388,12 +389,14 @@ def paramedics_list_view(request):
 def patient_list_view(request):
     emergencies_count = Emergency.objects.all().count()
     patients_count = User.objects.filter(user_type='vendor').count()
+    paramedics_count = User.objects.filter(user_type='paramedic').count()
     patients = User.objects.filter(user_type='vendor')
     pending_emergencies = Emergency.objects.filter(status='pending').count()
 
     context = {
         'patients': patients,
         'patients_count':patients_count,
+        'paramedics_count':paramedics_count,
         'emergencies_count':emergencies_count,
         'pending_emergencies':pending_emergencies
 
@@ -410,13 +413,27 @@ def emergency_list_view(request):
     doctor = request.user
     emergencies_count = Emergency.objects.all().count()
     patients = User.objects.filter(user_type='vendor').count()
+    paramedics_count = User.objects.filter(user_type='paramedic').count()
     # Filter the emergencies assigned to the paramedic
     pending_emergencies = Emergency.objects.filter(status='pending').count()
     emergencies = Emergency.objects.all()
+    # Configure the number of items per page
+    items_per_page = 5
+    
+    # Create a Paginator object
+    paginator = Paginator(emergencies, items_per_page)
+
+    # Get the current page number from the request's GET parameters
+    page_number = request.GET.get('page')
+
+    # Get the Page object for the current page number
+    page_obj = paginator.get_page(page_number)
     context = {
         'emergencies': emergencies,
         'doctor':doctor,
         'emergencies_count':emergencies_count,
+        'paramedics_count':paramedics_count,
+        'page_obj':page_obj,
         'pending_emergencies':pending_emergencies,
         'patients':patients
     }
